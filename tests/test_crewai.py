@@ -72,11 +72,11 @@ class AskHumanTests(unittest.TestCase):
     def test_ask_human_forwards_deterministic_key_and_returns_dict(self):
         decisions = FakeDecisions(ask_result={"answered": True, "value": "yes", "approved": True})
         with WithFakeClient(FakeClient(decisions=decisions)):
-            out = pc.ask_human("Approve?", external_id="user_1", node="gate")
+            out = pc.ask_human("Approve?", external_id="user_1", node="gate", idempotency_key="operation-1")
         self.assertTrue(out["approved"])
         self.assertEqual(
             decisions.ask_calls[0]["idempotency_key"],
-            pc.deterministic_key(["user_1", "gate", "Approve?"]),
+            "operation-1",
         )
 
 
