@@ -1,6 +1,4 @@
-"""Tests for pushary_crewai. Framework-free: CrewAI is never imported here (the tool
-factory imports it lazily), so the core helpers are exercised without it installed.
-"""
+"""Tests for the Pushary CrewAI adapter and its bound ask-human tool."""
 
 import hashlib
 import hmac
@@ -81,11 +79,12 @@ class AskHumanTests(unittest.TestCase):
 
 
 class MakeToolTests(unittest.TestCase):
-    def test_factory_lazily_imports_crewai(self):
-        # CrewAI is not installed in this env, so building the tool raises ImportError
-        # from the lazy import (proving the module itself loads without CrewAI).
-        with self.assertRaises(ImportError):
-            pc.make_ask_human_tool("user_1")
+    def test_factory_builds_tool_bound_to_customer(self):
+        decisions = FakeDecisions(ask_result={"answered": True, "value": "yes", "approved": True})
+        with WithFakeClient(FakeClient(decisions=decisions)):
+            tool = pc.make_ask_human_tool("user_1")
+            self.assertIn("approved", tool._run("Approve?"))
+        self.assertEqual(decisions.ask_calls[0]["external_id"], "user_1")
 
 
 class DescribeAnswerTests(unittest.TestCase):

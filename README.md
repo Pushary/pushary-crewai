@@ -72,7 +72,36 @@ if d["approved"]:
 
 ## Example
 
-A runnable example is in [`examples/`](examples).
+The [basic example](examples/basic.py) gives an agent a blocking ask-human tool.
+
+The [Flow example](examples/flow_feedback.py) uses CrewAI's native
+`@human_feedback(provider=...)` path. It creates a Pushary decision, saves the
+pending Flow, and exits. A later command reads the decision from Pushary and
+resumes the same Flow. No model key or open worker is needed. Tested with
+`crewai==1.15.22` and `pushary==2.1.1`.
+
+```bash
+python -m pip install -e . 'crewai==1.15.22'
+export PUSHARY_API_KEY='your Partner server key'
+export PUSHARY_EXTERNAL_ID='your enrolled customer ID'
+export CREWAI_STORAGE_DIR="$(mktemp -d)"
+python examples/flow_feedback.py start 'Send the release note'
+# Answer on the connected phone. Copy flow_id and decision_id from the output.
+python examples/flow_feedback.py resume FLOW_ID DECISION_ID \
+  --database "$CREWAI_STORAGE_DIR/resumes.sqlite"
+```
+
+Keep `CREWAI_STORAGE_DIR` and the resume database across processes. A pending
+decision returns `pending`; a decline or expiry returns `approved: false`.
+The example checks the decision ID, exact question, Flow, and recipient before
+resuming. Its SQLite claim prevents two local workers from resuming the same
+Flow concurrently; a failed or interrupted resume stays claimed for manual
+inspection. Use shared transactional storage across hosts.
+
+The Flow only returns the review result. If you attach a business action,
+bind its exact arguments and recipient in your application, and make the
+action idempotent. Do not treat a model's approval claim or a direct call to
+`flow.resume()` as authorization.
 
 ## License
 
