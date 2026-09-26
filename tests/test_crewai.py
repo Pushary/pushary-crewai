@@ -2,12 +2,15 @@
 
 import hashlib
 import hmac
+import importlib.util
 import json
 import os
 import unittest
 
 import pushary_crewai as pc
 from pushary import adapters
+
+CREWAI_INSTALLED = importlib.util.find_spec("crewai") is not None
 
 
 class FakeDecisions:
@@ -78,6 +81,7 @@ class AskHumanTests(unittest.TestCase):
         )
 
 
+@unittest.skipUnless(CREWAI_INSTALLED, "needs crewai: pip install crewai")
 class MakeToolTests(unittest.TestCase):
     def test_factory_builds_tool_bound_to_customer(self):
         decisions = FakeDecisions(ask_result={"answered": True, "value": "yes", "approved": True})

@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import importlib.util
 import os
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
+
+CREWAI_INSTALLED = importlib.util.find_spec("crewai") is not None
 
 
 class FakeDecisions:
@@ -37,6 +40,7 @@ class FakeClient:
         self.decisions = decisions
 
 
+@unittest.skipUnless(CREWAI_INSTALLED, "needs crewai: pip install crewai")
 class FlowFeedbackTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

@@ -1,38 +1,31 @@
 # pushary-crewai
 
+Phone approvals for CrewAI agents. Your agent asks, your user taps Approve or Deny.
+
+[Full walkthrough: Human-in-the-loop for CrewAI](https://pushary.com/human-in-the-loop-crewai?utm_source=github&utm_medium=oss-adapter&utm_campaign=pushary-crewai&utm_content=readme)
+
 [![CI](https://github.com/Pushary/pushary-crewai/actions/workflows/ci.yml/badge.svg)](https://github.com/Pushary/pushary-crewai/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/pushary-crewai)](https://pypi.org/project/pushary-crewai/)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Full walkthrough: [Human-in-the-loop for CrewAI](https://pushary.com/human-in-the-loop-crewai?utm_source=github&utm_medium=oss-adapter&utm_campaign=pushary-crewai&utm_content=readme). Reaching your own end-users on their phones is the Pushary [Partner plan](https://pushary.com/human-in-the-loop?utm_source=github&utm_medium=oss-adapter&utm_campaign=pushary-crewai&utm_content=readme).
+## What you need
 
-Human-in-the-loop for [CrewAI](https://www.crewai.com). Replace the console
-`human_input=True` prompt with a tool that reaches a real person on their phone and
-blocks until they answer, fail-closed.
+- A Pushary Partner plan, from $99 a month. [Start the trial](https://pushary.com/sign-up?from=agent&plan=partner&utm_source=github&utm_medium=oss-adapter&utm_campaign=pushary-crewai&utm_content=partner-start).
+- An API key from [Partner onboarding](https://pushary.com/onboarding/partner), set as `PUSHARY_API_KEY`.
+- Your users install the free Pushary app ([iPhone](https://apps.apple.com/us/app/pushary/id6785677563), [Android](https://play.google.com/store/apps/details?id=com.pushary.app)). They never sign up or pay.
 
-Requires the Pushary [Partner plan](https://pushary.com/agent-notifications-integration?utm_source=github&utm_medium=oss-adapter&utm_campaign=pushary-crewai&utm_content=readme).
-
-## Install
+## Quick start
 
 ```bash
 pip install pushary-crewai
+export PUSHARY_API_KEY=pk_xxx.sk_xxx
 ```
-
-Set `PUSHARY_API_KEY` (get it in your [dashboard](https://pushary.com/dashboard/settings)).
-
-## Connect a phone once
-
-```python
-from pushary_crewai import connect
-
-link = connect("user_123")  # show this to your end-user; one tap connects their phone
-```
-
-## Give an agent an ask-human tool
 
 ```python
 from crewai import Agent, Task, Crew
-from pushary_crewai import make_ask_human_tool
+from pushary_crewai import connect, make_ask_human_tool
+
+link = connect("user_123")  # once per user: show them this link
 
 agent = Agent(
     role="Ops",
@@ -48,9 +41,12 @@ task = Task(
 Crew(agents=[agent], tasks=[task]).kickoff()
 ```
 
-The tool blocks until the person answers and returns a fail-closed instruction. The
+This replaces the console `human_input=True` prompt. The tool waits until the person
+answers on their phone. A no, or no answer, tells the agent not to proceed. The
 `external_id` is bound when you build the tool, never taken from the model, so a
 prompt-injected agent cannot ask the wrong person.
+
+CrewAI's own docs on this: [Human feedback in Flows](https://docs.crewai.com/en/learn/human-feedback-in-flows).
 
 ## Lower-level helpers
 
@@ -64,10 +60,10 @@ if d["approved"]:
 
 ## API
 
-- `connect(external_id, *, api_key=None, base_url=None)` — enroll an end-user's phone.
-- `make_ask_human_tool(external_id, *, name=..., ...)` — a CrewAI `BaseTool` bound to that user.
-- `ask_human(question, *, external_id, type="confirm", ...)` — blocking, returns the decision dict.
-- `resolve_pushary_callback(raw_body, signature, secret)` — verify + parse a callback for a durable path.
+- `connect(external_id, *, api_key=None, base_url=None)`: enroll an end-user's phone.
+- `make_ask_human_tool(external_id, *, name=..., ...)`: a CrewAI `BaseTool` bound to that user.
+- `ask_human(question, *, external_id, type="confirm", ...)`: blocking, returns the decision dict.
+- `resolve_pushary_callback(raw_body, signature, secret)`: verify + parse a callback for a durable path.
 - `describe_answer(type, result)`, `is_affirmative(answer)`, `deterministic_key(parts)`, `SIGNATURE_HEADER`.
 
 ## Example
