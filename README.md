@@ -14,6 +14,14 @@ Phone approvals for CrewAI agents. Your agent asks, your user taps Approve or De
 - An API key from [Partner onboarding](https://pushary.com/onboarding/partner?utm_source=github&utm_medium=oss-adapter&utm_campaign=pushary-crewai&utm_content=partner-start), set as `PUSHARY_API_KEY`.
 - Your users install the free Pushary app ([iPhone](https://apps.apple.com/us/app/pushary/id6785677563), [Android](https://play.google.com/store/apps/details?id=com.pushary.app)). They never sign up or pay.
 
+## What your customer gets
+
+1. They open your connect link once. It shows your product's name and logo and connects their phone.
+2. When your crew calls the ask tool, a push notification titled with your product name arrives, such as **Acme needs your approval**.
+3. They approve or decline, pick an option or type an answer. A decline, an expired question or no answer tells the agent not to proceed.
+
+Pushary hosts the phone delivery, the decision record and the [audit log](https://pushary.com/docs/agents/audit-log?utm_source=github&utm_medium=oss-adapter&utm_campaign=pushary-crewai&utm_content=readme). CrewAI keeps the crew and any saved Flow. Your app keeps its own sign-in, the customer ID and the action itself.
+
 ## Quick start
 
 ```bash
@@ -98,6 +106,14 @@ The Flow only returns the review result. If you attach a business action,
 bind its exact arguments and recipient in your application, and make the
 action idempotent. Do not treat a model's approval claim or a direct call to
 `flow.resume()` as authorization.
+
+## Links
+
+- [Human in the loop for CrewAI](https://pushary.com/human-in-the-loop-crewai?utm_source=github&utm_medium=oss-adapter&utm_campaign=pushary-crewai&utm_content=readme): what your customer sees, with the full example.
+- [CrewAI section of the adapters guide](https://pushary.com/docs/agents/adapters?utm_source=github&utm_medium=oss-adapter&utm_campaign=pushary-crewai&utm_content=readme#crewai) in the Pushary docs.
+- [Partner plan](https://pushary.com/partners?utm_source=github&utm_medium=oss-adapter&utm_campaign=pushary-crewai&utm_content=readme), from $99 a month. All plans are on the [pricing page](https://pushary.com/pricing?utm_source=github&utm_medium=oss-adapter&utm_campaign=pushary-crewai&utm_content=readme).
+- [Browser demo](https://pushary.com/try?utm_source=github&utm_medium=oss-adapter&utm_campaign=pushary-crewai&utm_content=readme) of one approval.
+- Other adapters: [LangGraph](https://github.com/Pushary/pushary-langgraph), [Pydantic AI](https://github.com/Pushary/pushary-pydantic-ai), [OpenAI Agents SDK](https://github.com/Pushary/pushary-openai-agents).
 
 ## License
 
